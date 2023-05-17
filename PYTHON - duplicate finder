@@ -1,0 +1,38 @@
+import os
+import hashlib
+
+def get_file_hash(file_path):
+    """Compute and return the hash of a file."""
+    hash_md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+def find_duplicate_files(folder):
+    """Find and print duplicate files within a folder."""
+    file_hashes = {}
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_hash = get_file_hash(file_path)
+            if file_hash in file_hashes:
+                file_hashes[file_hash].append(file_path)
+            else:
+                file_hashes[file_hash] = [file_path]
+    
+    # Print duplicate files
+    for file_hash, file_paths in file_hashes.items():
+        if len(file_paths) > 1:
+            print("Duplicate files found:")
+            for file_path in file_paths:
+                print(file_path)
+            print("-" * 40)
+
+# Specify the folder to search for duplicates
+folder_to_search = "/path/to/folder"
+
+# Call the function to find duplicate files
+find_duplicate_files(folder_to_search)
+
+# CREATED WITH THE HELP OF OPEN-AI CHAT GPT: https://chat.openai.com/chat
