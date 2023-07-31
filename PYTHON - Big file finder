@@ -1,0 +1,42 @@
+import os
+
+def get_file_size(file_path):
+    return os.path.getsize(file_path)
+
+def get_biggest_files(folder_path, num_files=10):
+    files = []
+    for dirpath, _, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            files.append((file_path, get_file_size(file_path)))
+
+    files.sort(key=lambda x: x[1], reverse=True)
+    return files[:num_files]
+
+def convert_bytes_to_readable(size_bytes):
+    # Adapted from https://stackoverflow.com/a/21061141/8913097
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        if size_bytes < 1024:
+            return f"{size_bytes:.2f} {unit}"
+        size_bytes /= 1024
+
+if __name__ == "__main__":
+    try:
+        folder_path = input("Enter the folder path to search for biggest files: ")
+        num_files_to_display = int(input("Enter the number of biggest files to display: "))
+        
+        if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
+            print("Invalid folder path. Please provide a valid directory path.")
+            exit()
+
+        biggest_files = get_biggest_files(folder_path, num_files_to_display)
+
+        print(f"\nTop {num_files_to_display} biggest files:")
+        for i, (file_path, size_bytes) in enumerate(biggest_files, start=1):
+            print(f"{i}. {file_path} - {convert_bytes_to_readable(size_bytes)}")
+
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+
+
+# CREATED WITH THE HELP OF OPEN-AI CHAT GPT: https://chat.openai.com/chat
