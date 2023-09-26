@@ -1,0 +1,45 @@
+import psutil
+import matplotlib.pyplot as plt
+
+def get_disk_usage():
+    disk_partitions = psutil.disk_partitions()
+    disk_usage = []
+
+    for partition in disk_partitions:
+        try:
+            usage = psutil.disk_usage(partition.mountpoint)
+            disk_usage.append((partition.mountpoint, usage.percent, usage.total / (1024 ** 3)))
+        except PermissionError:
+            print(f"Permission denied for partition: {partition.mountpoint}")
+        except Exception as e:
+            print(f"An error occurred for partition: {partition.mountpoint}")
+            print(str(e))
+
+    return disk_usage
+
+def plot_disk_usage(disk_usage):
+    labels = []
+    sizes = []
+    sizes_gb = []
+
+    for partition, percent, size_gb in disk_usage:
+        labels.append(partition)
+        sizes.append(percent)
+        sizes_gb.append(size_gb)
+
+    plt.bar(labels, sizes)
+    plt.xlabel('Disk Partition')
+    plt.ylabel('Usage (%)')
+    plt.title('Disk Size Usage')
+
+    for i, size_gb in enumerate(sizes_gb):
+        plt.text(i, sizes[i], f'{size_gb:.2f} GB', ha='center', va='bottom')
+
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+disk_usage = get_disk_usage()
+plot_disk_usage(disk_usage)
+
+# CREATED WITH THE HELP OF OPEN-AI CHAT GPT: https://chat.openai.com/chat
