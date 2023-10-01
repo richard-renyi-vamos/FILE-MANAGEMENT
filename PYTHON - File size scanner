@@ -1,0 +1,44 @@
+import os
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import scrolledtext
+
+def get_largest_files(folder_path, num_files=10):
+    file_sizes = []
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_size = os.path.getsize(file_path)
+            file_sizes.append((file_path, file_size))
+
+    file_sizes.sort(key=lambda x: x[1], reverse=True)
+    return file_sizes[:num_files]
+
+def browse_folder():
+    folder_path = filedialog.askdirectory()
+    if folder_path:
+        largest_files = get_largest_files(folder_path, 10)
+        result_text.config(state=tk.NORMAL)
+        result_text.delete(1.0, tk.END)
+        for file_path, size in largest_files:
+            result_text.insert(tk.END, f"{file_path} - {size / (1024 * 1024):.2f} MB\n")
+        result_text.config(state=tk.DISABLED)
+
+# Create the main window
+root = tk.Tk()
+root.title("Biggest Files Finder")
+
+# Create and configure the result text area
+result_text = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=40, height=20)
+result_text.pack()
+result_text.config(state=tk.DISABLED)
+
+# Create and configure the Browse button
+browse_button = tk.Button(root, text="Browse Folder", command=browse_folder)
+browse_button.pack()
+
+# Start the GUI application
+root.mainloop()
+
+
+# CREATED WITH THE HELP OF OPEN-AI CHAT GPT: https://chat.openai.com/chat
