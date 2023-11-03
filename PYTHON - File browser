@@ -1,0 +1,18 @@
+import os
+
+def list_files_and_folders(path):
+    try:
+        # List all items in the given directory
+        items = os.listdir(path)
+        for item in items:
+            item_path = os.path.join(path, item)
+            if os.path.isfile(item_path):
+                print(f"File: {item}")
+            else:
+                print(f"Folder: {item}")
+    except FileNotFoundError:
+        print("Directory not found.")
+
+if __name__ == "__main__":
+    folder_path = input("Enter the path of the directory you want to browse: ")
+    list_files_and_folders(folder_path)
